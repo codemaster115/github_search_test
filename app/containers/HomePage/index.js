@@ -15,19 +15,21 @@ import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import {
-  makeSelectRepos,
+  makeSelectUsers,
   makeSelectLoading,
   makeSelectError,
+  makeSelectTotalCount,
 } from 'containers/App/selectors';
 import H2 from 'components/H2';
-import ReposList from 'components/ReposList';
+import H3 from 'components/H3';
+import UsersList from '../../components/UsersList';
 import AtPrefix from './AtPrefix';
 import CenteredSection from './CenteredSection';
 import Form from './Form';
 import Input from './Input';
 import Section from './Section';
 import messages from './messages';
-import { loadRepos } from '../App/actions';
+import { loadUsers } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
@@ -39,7 +41,8 @@ export function HomePage({
   username,
   loading,
   error,
-  repos,
+  users,
+  totalCount,
   onSubmitForm,
   onChangeUsername,
 }) {
@@ -47,14 +50,13 @@ export function HomePage({
   useInjectSaga({ key, saga });
 
   useEffect(() => {
-    // When initial state username is not null, submit the form to load repos
     if (username && username.trim().length > 0) onSubmitForm();
   }, []);
 
-  const reposListProps = {
+  const usersListProps = {
     loading,
     error,
-    repos,
+    users,
   };
 
   return (
@@ -92,9 +94,10 @@ export function HomePage({
                 value={username}
                 onChange={onChangeUsername}
               />
+              <H3>{totalCount} users results</H3>
             </label>
           </Form>
-          <ReposList {...reposListProps} />
+          <UsersList {...usersListProps} />
         </Section>
       </div>
     </article>
@@ -104,15 +107,17 @@ export function HomePage({
 HomePage.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-  repos: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
+  users: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
+  totalCount: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   onSubmitForm: PropTypes.func,
   username: PropTypes.string,
   onChangeUsername: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
-  repos: makeSelectRepos(),
+  users: makeSelectUsers(),
   username: makeSelectUsername(),
+  totalCount: makeSelectTotalCount(),
   loading: makeSelectLoading(),
   error: makeSelectError(),
 });
@@ -122,7 +127,7 @@ export function mapDispatchToProps(dispatch) {
     onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
     onSubmitForm: evt => {
       if (evt !== undefined && evt.preventDefault) evt.preventDefault();
-      dispatch(loadRepos());
+      dispatch(loadUsers());
     },
   };
 }

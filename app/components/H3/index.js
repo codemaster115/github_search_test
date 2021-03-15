@@ -1,7 +1,10 @@
-import React from 'react';
+import styled from 'styled-components';
 
-function H3(props) {
-  return <h3 {...props} />;
-}
+const H3 = styled.h3`
+  font-size: 1em;
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
 
 export default H3;
